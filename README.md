@@ -16,3 +16,6 @@ Refer to the following [readthedocs](https://caravel-sim-infrastructure.readthed
 ## Efabless upload 
 
 <img width="934" alt="image" src="https://github.com/Srini-web/piso_tapeout/assets/77874288/f5ea58f9-1a58-482c-91bf-0e0f20dff65b">
+
+Problem: was unable to upload on efabless
+Solution: It was due to the lack of an SSH key for the remote repo. Had to advance a few steps and then return to prrvious step after which upload was sucsessful
