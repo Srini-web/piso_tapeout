@@ -35,7 +35,7 @@
  *-------------------------------------------------------------
  */
 
-module user_proj_example #(
+module user_proj_piso #(
     parameter BITS = 16
 )(
 `ifdef USE_POWER_PINS
@@ -117,40 +117,29 @@ module user_proj_example #(
 
 endmodule
 
-module counter #(
+module piso #(
     parameter BITS = 16
 )(
-    input clk,
-    input reset,
-    input valid,
-    input [3:0] wstrb,
-    input [BITS-1:0] wdata,
-    input [BITS-1:0] la_write,
-    input [BITS-1:0] la_input,
-    output reg ready,
-    output reg [BITS-1:0] rdata,
-    output reg [BITS-1:0] count
+  input clk, load;
+  input [3:0]data_in;
+  output data_out;
+
+  // PISO register array to load and shift data
+  reg [3:0]q= 0;
 );
 
-    always @(posedge clk) begin
-        if (reset) begin
-            count <= 1'b0;
-            ready <= 1'b0;
-        end else begin
-            ready <= 1'b0;
-            if (~|la_write) begin
-                count <= count + 1'b1;
-            end
-            if (valid && !ready) begin
-                ready <= 1'b1;
-                rdata <= count;
-                if (wstrb[0]) count[7:0]   <= wdata[7:0];
-                if (wstrb[1]) count[15:8]  <= wdata[15:8];
-            end else if (|la_write) begin
-                count <= la_write & la_input;
-            end
-        end
+    always @ (posedge clk) 
+  begin
+    if (~load)
+      q <= data_in;// Load the data to the PISO register array 
+    else
+    begin // Shift the loaded data 1 bit right; into the serial data out register
+      q[0]=q[1];
+      q[1]=q[2];
+      q[2]=q[3];
+      q[3]=1'bx;
     end
-
+  end
+  assign data_out= q[0]; //Serial Output
 endmodule
 `default_nettype wire
